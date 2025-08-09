@@ -1,0 +1,28 @@
+{
+    "name": "mortgage",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "build": "npx tsc",
+        "start": "node dist/index.js",
+        "dev": "npx ts-node src/index.ts",
+        "format": "npx prettier . --write",
+        "commit": "npx cz"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "module",
+    "devDependencies": {
+        "@types/express": "^5.0.3",
+        "@types/node": "^24.2.1",
+        "cz": "^1.8.2",
+        "prettier": "^3.6.2",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.9.2"
+    },
+    "dependencies": {
+        "express": "^5.1.0"
+    }
+}
