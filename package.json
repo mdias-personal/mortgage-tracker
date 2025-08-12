@@ -1,14 +1,14 @@
 {
-    "name": "mortgage",
+    "name": "mortgage-tracker",
     "version": "1.0.0",
     "description": "",
     "main": "index.js",
     "scripts": {
-        "build": "npx tsc",
+        "build": "npx esbuild front/index.tsx --bundle --outfile=templates/bundle.js --format=esm --platform=browser",
         "start": "node dist/index.js",
-        "dev": "npx ts-node src/index.ts",
+        "dev": "npx ts-node server.ts",
         "format": "npx prettier . --write",
-        "commit": "npx cz"
+        "commit": "npx git-cz"
     },
     "keywords": [],
     "author": "",
@@ -17,12 +17,23 @@
     "devDependencies": {
         "@types/express": "^5.0.3",
         "@types/node": "^24.2.1",
-        "cz": "^1.8.2",
+        "@types/react": "^19.1.9",
+        "@types/react-dom": "^19.1.7",
+        "commitizen": "^4.3.1",
+        "esbuild": "^0.25.8",
+        "git-cz": "^4.9.0",
         "prettier": "^3.6.2",
         "ts-node": "^10.9.2",
         "typescript": "^5.9.2"
     },
     "dependencies": {
-        "express": "^5.1.0"
+        "express": "^5.1.0",
+        "react": "^19.1.1",
+        "react-dom": "^19.1.1"
+    },
+    "config": {
+        "commitizen": {
+            "path": "git-cz"
+        }
     }
 }
