@@ -7,7 +7,7 @@ import { fileURLToPath } from 'url'
 
 import type { LoanDTO } from './mid/types.ts'
 const app = express()
-const port = 3000
+const port = 8080
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -37,9 +37,7 @@ app.post('/save', (req, res) => {
 })
 
 app.get('/load/:name', (req, res) => {
-    const loan: LoanDTO = JSON.parse(
-        readFileSync(`saved_loans/${req.params.name}.json`, 'utf-8')
-    )
+    const loan: LoanDTO = JSON.parse(readFileSync(`saved_loans/${req.params.name}.json`, 'utf-8'))
     res.json(loan)
 })
 

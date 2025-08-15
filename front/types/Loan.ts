@@ -1,27 +1,21 @@
+import { LoanDTO } from '../../mid/types'
 import { Payment, ExtraPayment, PayoffInfo } from './interfaces'
 
-export class Loan {
+export class Loan implements LoanDTO {
     name: string
     rate: number
     term: number
-    firstPayment: Date
-    amount: number
+    start: Date
+    principle: number
     monthlyPayment: number
     extraPayments: ExtraPayment[]
     actualPayments: Payment[]
 
-    constructor(
-        name: string,
-        rate: number,
-        term: number,
-        amount: number,
-        firstPayment: Date,
-        extraPayments?: ExtraPayment[]
-    ) {
+    constructor(name: string, rate: number, term: number, principle: number, start: Date, extraPayments?: ExtraPayment[]) {
         this.name = name
-        this.amount = amount
-        this.firstPayment = firstPayment
-        this.rate = rate / 100
+        this.principle = principle
+        this.start = start
+        this.rate = rate
         this.term = term
         this.extraPayments = extraPayments ?? []
         this.monthlyPayment = this.calculatePayment()
@@ -31,22 +25,19 @@ export class Loan {
 
     calculatePayment(): number {
         const totalPayments = this.term * 12
-        const monthlyInterest = this.rate / 12
-        const result =
-            (this.amount *
-                (monthlyInterest * (1 + monthlyInterest) ** totalPayments)) /
-            ((1 + monthlyInterest) ** totalPayments - 1)
+        const monthlyInterest = this.rate / 100 / 12
+        const result = (this.principle * (monthlyInterest * (1 + monthlyInterest) ** totalPayments)) / ((1 + monthlyInterest) ** totalPayments - 1)
         return Math.round(100 * result) / 100
     }
 
     calculatePayments(): Payment[] {
-        let additionalPrinciple = this.getAdditionalPrinciple(this.firstPayment)
-        let money = this.calculatePrinciple(this.amount, additionalPrinciple)
+        let additionalPrinciple = this.getAdditionalPrinciple(this.start)
+        let money = this.calculatePrinciple(this.principle, additionalPrinciple)
 
         const payments: Payment[] = [
             {
-                balance: this.amount - (money.principle + money.extraPrinciple),
-                day: this.firstPayment,
+                balance: this.principle - (money.principle + money.extraPrinciple),
+                day: this.start,
                 ...money,
             },
         ]
@@ -55,9 +46,7 @@ export class Loan {
         while (payments[index].balance > 0) {
             const prev = payments[index]
             index++
-            const date = new Date(
-                new Date(prev.day).setMonth(prev.day.getMonth() + 1)
-            )
+            const date = new Date(new Date(prev.day).setMonth(prev.day.getMonth() + 1))
 
             additionalPrinciple = this.getAdditionalPrinciple(date)
             money = this.calculatePrinciple(prev.balance, additionalPrinciple)
@@ -67,8 +56,7 @@ export class Loan {
             }
 
             payments.push({
-                balance:
-                    prev.balance - (money.principle + money.extraPrinciple),
+                balance: prev.balance - (money.principle + money.extraPrinciple),
                 day: date,
                 ...money,
             })
@@ -85,7 +73,7 @@ export class Loan {
         extraPrinciple: number
         interest: number
     } {
-        const interest = balance * (this.rate / 12)
+        const interest = balance * (this.rate / 100 / 12)
         let principle = this.monthlyPayment - interest
         let extraPrinciple = additionalPrinciple
 
@@ -113,17 +101,10 @@ export class Loan {
                 extra += 0
             } else if (p.frequency === 'monthly') {
                 extra += p.amount
-            } else if (
-                p.frequency === 'yearly' &&
-                p.start.getMonth() === month
-            ) {
+            } else if (p.frequency === 'yearly' && p.start.getMonth() === month) {
                 extra += p.amount
-            } else if (
-                p.frequency === 'one-time' &&
-                p.start.getMonth() === month &&
-                p.start.getFullYear() === year
-            ) {
-                extra += 0
+            } else if (p.frequency === 'one-time' && p.start.getMonth() === month && p.start.getFullYear() === year) {
+                extra += p.amount
             } else {
                 extra += 0
             }
@@ -138,9 +119,7 @@ export class Loan {
         this.actualPayments = this.calculatePayments()
     }
     deleteExtra(i: number): void {
-        this.extraPayments = this.extraPayments.filter(
-            (_p, index) => index !== i
-        )
+        this.extraPayments = this.extraPayments.filter((_p, index) => index !== i)
         this.sortExtraPayments()
         this.actualPayments = this.calculatePayments()
     }
@@ -157,8 +136,7 @@ export class Loan {
     getPayoffInfo(): PayoffInfo {
         return {
             monthlyPayment: this.monthlyPayment,
-            estimatedPayoff:
-                this.actualPayments[this.actualPayments.length - 1].day,
+            estimatedPayoff: this.actualPayments[this.actualPayments.length - 1].day,
             term: this.actualPayments.length / 12,
             totalPayments: this.actualPayments.length,
             totalInterest: this.actualPayments

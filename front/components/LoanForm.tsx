@@ -8,8 +8,8 @@ import ExtraPaymentForm from './ExtraPayments/ExtraPaymentForm'
 import { convertToLoan, convertToLoanDTO } from '../Utils'
 import ExtraPaymentSection from './ExtraPayments/ExtraPaymentSection'
 import PaymentScheduleSection from './PaymentSchedule/PaymentScheduleSection'
-import PaymentInformationSection from './PaymentInformation/PaymentInformationSection'
 import PayoffGraphSection from './PayoffGraph/PayoffGraphSection'
+import PayoffInformationSection from './PayoffInformation/PayoffInformationSection'
 
 const LoanForm: React.FC = () => {
     const [loan, setLoan] = useState<undefined | Loan>()
@@ -41,14 +41,7 @@ const LoanForm: React.FC = () => {
                             })
                     }}
                     onSubmit={(name, rate, length, amount, firstPayment) => {
-                        const l = new Loan(
-                            name,
-                            rate,
-                            length,
-                            amount,
-                            new Date(firstPayment),
-                            extraPayments
-                        )
+                        const l = new Loan(name, rate, length, amount, new Date(firstPayment), extraPayments)
                         setLoan(l)
                         resetVals(l)
                         fetch('/save', {
@@ -75,24 +68,22 @@ const LoanForm: React.FC = () => {
                         }}
                     />
                 )}
-                {payoffInfo && <PaymentInformationSection info={payoffInfo} />}
+                {payoffInfo && <PayoffInformationSection info={payoffInfo} />}
             </div>
             <div id='bottom'>
-                {payments.length > 0 && (
+                {loan && payments.length > 0 && (
                     <>
                         <PaymentScheduleSection payments={payments} />
-                        <PayoffGraphSection />
+                        <PayoffGraphSection loan={loan} />
                     </>
                 )}
             </div>
             {loan && showExtraForm && (
                 <ExtraPaymentForm
                     onClose={() => setShowExtraForm(false)}
-                    startYear={loan.firstPayment.getFullYear()}
+                    startYear={loan.start.getFullYear()}
                     length={loan.term}
-                    payment={
-                        newExtraIndex ? extraPayments[newExtraIndex] : undefined
-                    }
+                    payment={newExtraIndex ? extraPayments[newExtraIndex] : undefined}
                     onSubmit={(payment: ExtraPayment) => {
                         console.log(newExtraIndex)
                         if (newExtraIndex !== undefined) {

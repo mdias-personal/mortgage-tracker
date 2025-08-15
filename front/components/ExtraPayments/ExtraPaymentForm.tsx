@@ -3,6 +3,7 @@ import { ExtraPayment } from '../../types/interfaces'
 import './ExtraPayment.css'
 import { months, reverseMonths } from '../../types/consts'
 import { getFrequency } from '../../Utils'
+import MonthYearSelection from '../../common/MonthYearSelection'
 
 const ExtraPaymentForm = (props: {
     payment: ExtraPayment | undefined
@@ -11,7 +12,7 @@ const ExtraPaymentForm = (props: {
     onSubmit: (newExtra: ExtraPayment) => void
     onClose: () => void
 }): JSX.Element => {
-    const { payment, startYear, length, onSubmit, onClose } = props
+    const { payment, length, onSubmit, onClose } = props
     const [newExtra, setNewExtra] = useState<ExtraPayment>(
         payment ?? {
             amount: 500,
@@ -20,41 +21,33 @@ const ExtraPaymentForm = (props: {
         }
     )
 
-    const [curMonth, setCurMonth] = useState(
-        payment ? (reverseMonths.get(payment.start.getMonth()) ?? 'Jan') : 'Jan'
-    )
-    const [curYear, setCurYear] = useState(
-        payment ? payment.start.getFullYear() : '2025'
-    )
-
-    const years: string[] = []
-    for (let i = startYear; i <= startYear + length; i++) {
-        years.push(i + '')
-    }
-
     return (
         <div className='modal'>
             <div className='modal-content'>
                 <span className='close' onClick={() => onClose()}>
                     &times;
                 </span>
-                <p>
-                    <b>Amount:</b>
-                </p>
+                <h2>{payment ? 'Edit' : 'Add'} Extra Payment</h2>
+                <label htmlFor='input-extraAmount'>
+                    <b>Amount</b>
+                </label>
                 <input
-                    value={newExtra.amount}
+                    id='input-extraAmount'
+                    defaultValue={newExtra.amount}
                     type='text'
-                    onChange={(e) =>
+                    onBlur={(e) =>
                         setNewExtra({
                             ...newExtra,
                             amount: parseInt(e.target.value),
                         })
                     }
                 />
-                <p>
-                    <b>Frequency:</b>
-                </p>
+                <br />
+                <label htmlFor='input-frequency'>
+                    <b>Frequency</b>
+                </label>
                 <select
+                    id='input-frequency'
                     value={newExtra.frequency}
                     onChange={(e) =>
                         setNewExtra({
@@ -67,50 +60,13 @@ const ExtraPaymentForm = (props: {
                     <option>yearly</option>
                     <option>one-time</option>
                 </select>
-                <p>
-                    <b>Start Month:</b>
-                </p>
-                <select
-                    value={curMonth}
-                    onChange={(e) => {
-                        const month: string =
-                            months.get(e.target.value) ?? 'Fuk'
-                        const date = `${month}/01/${curYear}`
-                        console.log(date)
-                        setCurMonth(e.target.value)
-                        setNewExtra({
-                            ...newExtra,
-                            start: new Date(date),
-                        })
-                    }}
-                >
-                    {months
-                        .keys()
-                        .toArray()
-                        .map((m) => (
-                            <option key={m}>{m}</option>
-                        ))}
-                </select>
-                <p>
-                    <b>Start Year:</b>
-                </p>
-                <select
-                    value={curYear}
-                    onChange={(e) => {
-                        const year: string = e.target.value
-                        const month: string = months.get(curMonth) ?? 'Fuk'
-                        const date = `${month}/01/${year}`
-                        setCurYear(year)
-                        setNewExtra({
-                            ...newExtra,
-                            start: new Date(date),
-                        })
-                    }}
-                >
-                    {years.map((y) => (
-                        <option key={y}>{y}</option>
-                    ))}
-                </select>
+                <br />
+                <MonthYearSelection
+                    startMonth={newExtra?.start.getMonth()}
+                    startYear={newExtra?.start.getFullYear()}
+                    length={length}
+                    onSelect={(date) => setNewExtra({ ...newExtra, start: date })}
+                />
                 <button onClick={() => onSubmit(newExtra)}>save</button>
             </div>
         </div>

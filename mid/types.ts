@@ -3,7 +3,7 @@ export interface LoanDTO {
     term: number
     rate: number
     principle: number
-    balance: number
+    balance?: number
     start: Date
     extraPayments: {
         amount: number

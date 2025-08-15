@@ -34,14 +34,9 @@ div#entry {
     color: darkolivegreen;
     margin: 40px;
 }
-div#result {
-    color: cadetblue;
-    margin: 40px;
-}
 div#extra {
     color: darkcyan;
     margin: 40px;
-    overflow-y: scroll;
 }
 div#payments {
     color: cornflowerblue;
@@ -75,6 +70,14 @@ button:hover {
 li.payment {
     border-bottom: outset;
     margin: 5px;
-    max-width: 300px;
-    height: 250px;
+    max-width: 400px;
+    height: 275px;
+    padding-bottom: 10px;
+}
+label {
+    display: inline-block;
+    padding-right: 15px;
+    padding-bottom: 20px;
+    width: 200px;
+    text-align: left;
 }

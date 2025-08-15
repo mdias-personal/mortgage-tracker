@@ -16,12 +16,7 @@ const ExtraPaymentSection = (props: {
             <div className='scroll'>
                 <ul>
                     {extraPayments.map((p, i) => (
-                        <ExtraPaymentListItem
-                            key={`extra_payment_${i}`}
-                            payment={p}
-                            onDelete={() => onDelete(i)}
-                            onEdit={() => onEdit(i)}
-                        />
+                        <ExtraPaymentListItem key={`extra_payment_${i}`} payment={p} onDelete={() => onDelete(i)} onEdit={() => onEdit(i)} />
                     ))}
                 </ul>
             </div>

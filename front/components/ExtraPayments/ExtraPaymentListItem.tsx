@@ -1,30 +1,38 @@
 import { JSX } from 'react'
 import { ExtraPayment } from '../../types/interfaces'
-import { round } from '../../Utils'
+import { displayMoney, round } from '../../Utils'
 
-const ExtraPaymentListItem = (props: {
-    payment: ExtraPayment
-    onDelete: () => void
-    onEdit: () => void
-}): JSX.Element => {
+const ExtraPaymentListItem = (props: { payment: ExtraPayment; onDelete: () => void; onEdit: () => void }): JSX.Element => {
     const { payment, onDelete, onEdit } = props
     return (
         <li className='payment'>
             <>
-                <p>
-                    <b>Start Date:</b> {payment.start.toLocaleDateString()}
-                </p>
+                <label htmlFor='extra-startDate'>
+                    <b>Start Date:</b>
+                </label>
+                <span id='extra-startDate'>
+                    {payment.start.toLocaleDateString('en-us', {
+                        timeZone: 'America/New_York',
+                    })}
+                </span>
                 {payment.end && (
-                    <p>
-                        <b>End Date:</b> {payment.end.toLocaleDateString()}
-                    </p>
+                    <>
+                        <label htmlFor='extra-endDate'>
+                            <b>End Date:</b>
+                        </label>
+                        <span id='extra-endDate'>{payment.end.toLocaleDateString()}</span>
+                    </>
                 )}
-                <p>
-                    <b>Amount:</b> {round(payment.amount)}
-                </p>
-                <p>
-                    <b>Frequency:</b> {payment.frequency}
-                </p>
+                <label htmlFor='extra-amount'>
+                    <b>Amount:</b>
+                </label>
+                <span id='extra-amount'>{displayMoney(payment.amount)}</span>
+                <br />
+                <label htmlFor='extra-frequency'>
+                    <b>Frequency:</b>
+                </label>
+                <span id='extra-frequency'>{payment.frequency}</span>
+                <br />
             </>
             <button type='submit' onClick={() => onEdit()}>
                 edit

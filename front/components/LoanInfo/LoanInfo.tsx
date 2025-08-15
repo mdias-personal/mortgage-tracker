@@ -1,27 +1,20 @@
 import { JSX, useState, useEffect } from 'react'
 import { Loan } from '../../types/Loan'
 import { json } from 'stream/consumers'
+import MonthYearSelection from '../../common/MonthYearSelection'
 
 const LoanInfo = (props: {
     loan: Loan | undefined
     onLoad: (name: string) => void
-    onSubmit: (
-        name: string,
-        rate: number,
-        length: number,
-        amount: number,
-        firstPayment: Date
-    ) => void
+    onSubmit: (name: string, rate: number, length: number, amount: number, start: Date) => void
 }): JSX.Element => {
     const { loan, onSubmit, onLoad } = props
 
     const [name, setName] = useState(loan?.name)
-    const [amount, setAmount] = useState(loan?.amount)
+    const [amount, setAmount] = useState(loan?.principle)
     const [length, setLength] = useState(loan?.term)
     const [rate, setRate] = useState(loan?.rate)
-    const [firstPayment, setFirstPayment] = useState(
-        loan ? loan.firstPayment.toISOString().slice(0, 10) : undefined
-    )
+    const [start, setStart] = useState(loan ? loan.start.toISOString().slice(0, 10) : undefined)
 
     const [loanNames, setLoanNames] = useState<string[]>([])
     const [loanToLoad, setLoanToLoad] = useState('')
@@ -37,62 +30,37 @@ const LoanInfo = (props: {
     return (
         <div id='entry'>
             <h2>Loan Information</h2>
-            <p>Loan Name</p>
-            <input
-                type='text'
-                value={name}
-                defaultValue={loan?.name}
-                onChange={(e) => setName(e.target.value)}
-            />
-            <p>Loan Amount</p>
-            <input
-                type='text'
-                value={amount}
-                defaultValue={loan?.amount}
-                onBlur={(e) => setAmount(parseInt(e.target.value))}
-            />
-            <p>Loan Length</p>
-            <input
-                type='text'
-                value={length}
-                defaultValue={loan?.term}
-                onBlur={(e) => setLength(parseInt(e.target.value))}
-            />
-            <p>First Payment Date</p>
-            <input
-                type='date'
-                value={firstPayment}
-                defaultValue={
-                    loan
-                        ? loan.firstPayment.toISOString().slice(0, 10)
-                        : '08/01/2025'
-                }
-                onChange={(e) => {
-                    console.log(e.target.value)
-                    setFirstPayment(
-                        new Date(e.target.value).toISOString().slice(0, 10)
-                    )
-                }}
-            />
-            <p>Interest Rate</p>
-            <input
-                type='text'
-                value={rate}
-                defaultValue={loan?.rate}
-                onChange={(e) => setRate(parseFloat(e.target.value))}
-            />
+            <label htmlFor='name-input'>
+                <b>Loan Name</b>
+            </label>
+            <input id='name-input' type='text' defaultValue={loan?.name} onChange={(e) => setName(e.target.value)} />
             <br />
-            {name && rate && length && amount && firstPayment && (
+            <label htmlFor='principle-input'>
+                <b>Loan Amount</b>
+            </label>
+            <input id='principle-input' type='text' defaultValue={loan?.principle} onBlur={(e) => setAmount(parseInt(e.target.value))} />
+            <br />
+            <label htmlFor='term-input'>
+                <b>Loan Length</b>
+            </label>
+            <input id='term-input' type='text' defaultValue={loan?.term} onBlur={(e) => setLength(parseInt(e.target.value))} />
+            <br />
+            <MonthYearSelection
+                length={length || 30}
+                onSelect={(date) => setStart(date.toLocaleDateString().slice(0, 10))}
+                startMonth={start ? new Date(start).getMonth() : undefined}
+                startYear={start ? new Date(start).getFullYear() : undefined}
+            />
+            <label htmlFor='rate-input'>
+                <b>Interest Rate</b>
+            </label>
+            <input id='rate-input' type='text' defaultValue={loan && loan.rate} onBlur={(e) => setRate(parseFloat(e.target.value))} />
+            <br />
+            {name && rate && length && amount && start && (
                 <button
                     type='submit'
                     onClick={() => {
-                        onSubmit(
-                            name,
-                            rate,
-                            length,
-                            amount,
-                            new Date(firstPayment)
-                        )
+                        onSubmit(name, rate, length, amount, new Date(start))
                     }}
                 >
                     save

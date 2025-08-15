@@ -6,15 +6,7 @@ export function round(num: number): number {
 }
 
 export function convertToLoanDTO(loan: Loan): LoanDTO {
-    return {
-        name: loan.name,
-        principle: loan.amount,
-        term: loan.term,
-        balance: 0,
-        start: loan.firstPayment,
-        rate: loan.rate * 100,
-        extraPayments: loan.extraPayments,
-    }
+    return loan as LoanDTO
 }
 
 export function convertToLoan(dto: LoanDTO): Loan {
@@ -41,4 +33,11 @@ export function getFrequency(value: string): 'monthly' | 'yearly' | 'one-time' {
     } else {
         return 'monthly'
     }
+}
+
+export function displayMoney(num: number): string {
+    return new Intl.NumberFormat('en-US', {
+        style: 'currency',
+        currency: 'USD',
+    }).format(round(num))
 }
